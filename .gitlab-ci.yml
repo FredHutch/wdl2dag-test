@@ -1,0 +1,20 @@
+variables:
+  CI_DEBUG_SERVICES: "true"
+
+
+before_script:
+  - apk update
+  - apk --no-cache add git
+  # below is from https://stackoverflow.com/a/65810302/470769
+  - mkdir -p $HOME/.docker
+  - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+  - set -x
+
+stages:
+  - build
+
+build:
+  stage: build
+  script:
+    - docker pull sc-registry.fredhutch.org/wdl2dag:latest
+    - docker run --rm -e "CI_PROJECT_NAME=${CI_PROJECT_NAME}" -e "CI_COMMIT_SHA=${CI_COMMIT_SHA}" -e "CI_COMMIT_BEFORE_SHA=${CI_COMMIT_BEFORE_SHA}" -e "CI_PROJECT_PATH=${CI_PROJECT_PATH}"  -e "CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME}" sc-registry.fredhutch.org/wdl2dag:latest
